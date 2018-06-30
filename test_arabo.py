@@ -27,8 +27,12 @@ def callback():
     writesyn=False
     newsyn=False
     categoria=var.get()
+
     arabic_less=deNoise(entry_arab.get())
     arabic=entry_arab.get()
+    if len(arabic.split())==1:
+        arabic+=" -"
+        arabic_less+=" -"
     trad=entry_french.get()
     inserzione=number.get()
     if len(categoria)==0 or len(arabic)==0 or len(trad)==0 or len(inserzione)==0:
@@ -179,3 +183,4 @@ if windows:
     entry_french['validatecommand']=french
    
 master.mainloop()
+
