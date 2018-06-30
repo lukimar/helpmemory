@@ -35,8 +35,8 @@ def search():
         
         for newline in fichier.readlines():
             newlist=newline.decode().split()
-            if categoria_var.get()=='Tutto' or categoria_var.get()==newlist[3]:
-                if state_inserzione.get()==0 or inserzione_var.get()==newlist[4]:
+            if categoria_var.get()=='Tutto' or categoria_var.get()==newlist[5]:
+                if state_inserzione.get()==0 or inserzione_var.get()==newlist[6]:
                     valid_list.append(newlist)
 
 
@@ -54,7 +54,7 @@ def lez_search():
     with open('dictionary.txt','rb') as fichier:
         for newline in fichier.readlines() :
             listed=newline.decode().split()
-            if listed[4]==lezione_var.get() and i<=int(wordnumber_var.get()):
+            if listed[6]==lezione_var.get() and i<=int(wordnumber_var.get()):
                 i+=1
                 valid_list.append(listed)
     definitions=str()
@@ -82,7 +82,7 @@ def newword():
     length=len(valid_list)-1
     rand=randint(0,length)
 
-    string= '"'+valid_list[rand][lang]+'"' + " : "
+    string= valid_list[rand][lang] + " : "
     trad_var.set(string)
     syn_list=[]
     if lingua_var.get()=="Italiano":
@@ -98,25 +98,48 @@ def newword():
     
 def translate():
     global valid_list, rand,lang,trad,syn_list
-
-    if entry_var.get()=="":
+    traduc=entry_var.get()
+    if traduc=="":
         info['fg']='black'
         info_var.set('Il campo è vuoto')
         return
-    
-    if entry_var.get()==valid_list[rand][trad]:
+    if lingua_var.get()=="Arabo" and traduc==valid_list[rand][trad]:
         info_var.set('Bravo!')
         info['fg']='green'
-
+        
+    elif len(traduc.split())==1 and traduc==valid_list[rand][trad]:
+        if valid_list[rand][1]=="-":
+            info_var.set('Bravo!')
+            info['fg']='green'
+        else :
+            if valid_list[rand][5]=="Nome":
+                info_var.set('E il plurale?')
+            elif valid_list[rand][5]=="Verbo":
+                info_var.set('E il presente?')
+            info['fg']='orange'
+            return
+    elif len(traduc.split())==2:
+        if traduc.split()[0]==valid_list[rand][trad]:
+            if traduc.split()[1]==valid_list[rand][3]:
+                info_var.set('Bravo!')
+                info['fg']='green'
+            else :
+                if valid_list[rand][5]=="Nome":
+                    info_var.set('Il plurale\nè sbagliato')
+                elif valid_list[rand][5]=="Verbo":
+                    info_var.set('Il presente\nè sbagliato')
+                entry_trad.delete(0,20)
+                info['fg']='red'
+                return
     else:
         for synonyme in syn_list:
-            if entry_var.get()==synonyme.decode():
+            if traduc.split()[0]==synonyme.decode():
                 info_var.set('Un sinonimo?')
                 info['fg']='orange'
                 entry_trad.delete(0,20)
                 return
     
-    if entry_var.get()!=valid_list[rand][trad]:
+    if traduc.split()[0]!=valid_list[rand][trad]:
         info_var.set('Riprova!')
         info['fg']='red'
         entry_trad.delete(0,20)
@@ -135,12 +158,12 @@ def start_quiz():
     if windows:
         if lingua_var.get()=="Italiano":
             arab()
-            lang=2
-            trad=1
+            lang=4
+            trad=2
         else:
             french()
             lang=0
-            trad=2
+            trad=4
     newword()
 
             
@@ -166,7 +189,10 @@ def start_lezione():
     
 def get_solution():
     global rand,valid_list,trad
-    entry_var.set(valid_list[rand][trad])
+    string=valid_list[rand][trad]
+    if valid_list[rand][3]!="-" and lingua_var.get()=="Italiano":
+        string+=" "+valid_list[rand][3]
+    entry_var.set(string)
 
 def arab():
     py_win_keyboard_layout.change_foreground_window_keyboard_layout(-255851519)
@@ -266,7 +292,7 @@ solution=Button(cadre,text='Soluzione',command=get_solution)
 solution.grid(padx=30,pady=30,column=2,row=6)
 info_var=StringVar()
 info=Label(cadre,textvariable=info_var)
-info.grid(padx=30,pady=30,row=6,column=1)
+info.grid(padx=30,pady=30,row=6,column=1,rowspan=2)
 info_var.set('Traduzione?')           
 trad_var=StringVar()
 traduction=Label(cadre,textvariable=trad_var)
@@ -276,7 +302,7 @@ entry_var=StringVar()
 entry_trad=Entry(cadre,textvariable=entry_var)
 entry_trad.grid(padx=30,pady=30,row=5,column=0,columnspan=3)
 
-para_back=Button(cadre,text='Parametri',command=start_quiz)
+para_back=Button(cadre,text='Parametri',command=start_para)
 para_back.grid(padx=30,pady=30,row=6,column=0)
 
 menu_back=Button(cadre,text='Menu',command=start_menu)
@@ -287,4 +313,5 @@ if windows:
     layout=py_win_keyboard_layout.get_foreground_window_keyboard_layout()
 
 fen.mainloop()
+
 

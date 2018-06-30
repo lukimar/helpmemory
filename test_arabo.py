@@ -9,8 +9,7 @@ if windows:
         import py_win_keyboard_layout
 
 def deNoise(text):
-    noise = re.compile(""" ّ    | # Tashdid
-                             َ    | # Fatha
+    noise = re.compile("""   َ    | # Fatha
                              ً    | # Tanwin Fath
                              ُ    | # Damma
                              ٌ    | # Tanwin Damm
