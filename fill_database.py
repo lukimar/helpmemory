@@ -1,4 +1,5 @@
 from tkinter import *
+import re
 import platform
 if platform.system()=='Windows':
     windows=True
@@ -26,12 +27,12 @@ def callback():
     writesyn=False
     newsyn=False
     categoria=var.get()
-
-    arabic_less=deNoise(entry_arab.get())
-    arabic=entry_arab.get()
-    if len(arabic.split())==1:
-        arabic+=" -"
-        arabic_less+=" -"
+    arabic=re.sub(' +',' ',entry_arab.get().strip())
+    if len(arabic.split(":"))==1:
+        arabic+=":-"
+    else:
+        arabic=arabic.split(":")[0].strip()+":"+arabic.split(":")[1].strip()
+    arabic_less=deNoise(arabic)
     trad=entry_french.get()
     inserzione=number.get()
     if len(categoria)==0 or len(arabic)==0 or len(trad)==0 or len(inserzione)==0:
@@ -42,48 +43,52 @@ def callback():
  #       return;
     arab_encoded=arabic.encode('utf-8')
     less_encoded=arabic_less.encode('utf-8')
-    space=' '.encode('utf-8')
+    space=':'.encode('utf-8')
     synonyms=0
     synlist=[]
+    trad=re.sub(" +"," ",trad)
+    trad=trad.replace(" ,",",")
+    trad=trad.replace(", ",",")
+
     with open('synonyms.txt','ba') as synfile:
         print()
     with open('synonyms.txt','br') as synfile:
         everysyn=synfile.readlines()
         for i in range(len(everysyn)):
             newline=everysyn[i]
-            fullist=newline.decode().split()
+            fullist=newline.decode().split(":")
             if trad==fullist[0]:
                 writesyn=True
                 everysyn[i]=newline+space+less_encoded
-    if writesyn:    
+    if writesyn:
         with open('synonyms.txt','bw') as synwrite:
             synwrite.writelines(everysyn)
     else:
         with open('dictionary.txt','rb') as fichier:
             for newline in fichier.readlines():
-                fullist=newline.split()
-                if trad==fullist[2].decode():
+                fullist=newline.decode().split(":")
+                if trad==fullist[2]:
                     newsyn=True
     if newsyn:
         with open('synonyms.txt','ab') as fichier:
             print(len(everysyn))
             if len(everysyn)!=0:
                 fichier.write('\n'.encode('utf-8'))
-            string=trad.encode('utf-8')+space+fullist[1]+space+less_encoded
+            string=trad.encode('utf-8')+space+fullist[1].encode('utf-8')+space+less_encoded
             fichier.write(string)
-    
+
     with open('dictionary.txt','ab') as fichier:
         fichier.write(arab_encoded)
         fichier.write(space)
         fichier.write(less_encoded)
     with open('dictionary.txt','a') as fichier:
-        endstr=' '+trad+' '+categoria+' '+inserzione+'\n'
+        endstr=':'+trad+':'+categoria+':'+inserzione+'\n'
         fichier.write(endstr)
-    entry_arab.delete(0,20)
-    entry_french.delete(0,20)
+    entry_arab.delete(0,50)
+    entry_french.delete(0,50)
 
 
-    
+
 def arab():
     py_win_keyboard_layout.change_foreground_window_keyboard_layout(-255851519)
     return False
@@ -180,6 +185,6 @@ if windows:
     master.protocol("WM_DELETE_WINDOW",exiting)
     entry_arab['validatecommand']=arab
     entry_french['validatecommand']=french
-   
+
 master.mainloop()
 

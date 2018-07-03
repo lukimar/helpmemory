@@ -4,7 +4,7 @@ if platform.system()=='Windows':
     windows=True
 else :
     windows=False
-print(windows)    
+print(windows)
 from random import randint
 if windows:
         import py_win_keyboard_layout
@@ -27,14 +27,14 @@ def disable_inserzione():
         which_inserzione['state']='readonly';
 
 def search():
-    
+
     global valid_list,rand,lang,trad
     valid_list=[]
-    
+
     with open('dictionary.txt','rb') as fichier:
-        
+
         for newline in fichier.readlines():
-            newlist=newline.decode().split()
+            newlist=newline.decode().split(":")
             if categoria_var.get()=='Tutto' or categoria_var.get()==newlist[5]:
                 if state_inserzione.get()==0 or inserzione_var.get()==newlist[6]:
                     valid_list.append(newlist)
@@ -53,7 +53,7 @@ def lez_search():
     i=0
     with open('dictionary.txt','rb') as fichier:
         for newline in fichier.readlines() :
-            listed=newline.decode().split()
+            listed=newline.decode().split(':')
             if listed[6]==lezione_var.get() and i<=int(wordnumber_var.get()):
                 i+=1
                 valid_list.append(listed)
@@ -78,7 +78,7 @@ def trans(event):
 
 def newword():
     global valid_list, rand,lang,trad,syn_list
-    entry_trad.delete(0,20)    
+    entry_trad.delete(0,20)
     length=len(valid_list)-1
     rand=randint(0,length)
 
@@ -89,13 +89,13 @@ def newword():
         with open('synonyms.txt','rb') as fichier:
             for newline in fichier.readlines():
                 print(newline)
-                fullist=newline.split()
+                fullist=newline.split(':')
                 print(fullist[0].decode())
                 print(valid_list[rand][2])
                 if fullist[0].decode()==valid_list[rand][2]:
                     for i in range(len(fullist)-1):
                         syn_list.append(fullist[i+1])
-    
+
 def translate():
     global valid_list, rand,lang,trad,syn_list
     traduc=entry_var.get()
@@ -106,7 +106,7 @@ def translate():
     if lingua_var.get()=="Arabo" and traduc==valid_list[rand][trad]:
         info_var.set('Bravo!')
         info['fg']='green'
-        
+
     elif len(traduc.split())==1 and traduc==valid_list[rand][trad]:
         if valid_list[rand][1]=="-":
             info_var.set('Bravo!')
@@ -138,7 +138,7 @@ def translate():
                 info['fg']='orange'
                 entry_trad.delete(0,20)
                 return
-    
+
     if traduc.split()[0]!=valid_list[rand][trad]:
         info_var.set('Riprova!')
         info['fg']='red'
@@ -166,7 +166,7 @@ def start_quiz():
             trad=4
     newword()
 
-            
+
 def start_para():
     menu.grid_remove()
     cadre.grid_remove()
@@ -186,7 +186,7 @@ def start_parlezione():
 def start_lezione():
     lezione_par.grid_remove()
     lezione.grid()
-    
+
 def get_solution():
     global rand,valid_list,trad
     string=valid_list[rand][trad]
@@ -204,7 +204,7 @@ def french():
 def exiting():
     py_win_keyboard_layout.change_foreground_window_keyboard_layout(layout)
     fen.destroy()
-    
+
 def disable_wordnumber():
     if state_wordnumber.get()==0:
         which_wordnumber['state']='disabled';
@@ -293,7 +293,7 @@ solution.grid(padx=30,pady=30,column=2,row=6)
 info_var=StringVar()
 info=Label(cadre,textvariable=info_var)
 info.grid(padx=30,pady=30,row=6,column=1,rowspan=2)
-info_var.set('Traduzione?')           
+info_var.set('Traduzione?')
 trad_var=StringVar()
 traduction=Label(cadre,textvariable=trad_var)
 traduction.grid(padx=30,pady=30,column=0,columnspan=3,row=4)
