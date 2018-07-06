@@ -1,0 +1,18 @@
+تَوَقّف:-:توقّف:-:fermarsi,smettere:Verbo:1
+وَقَفَ:-:وقف:-:stare in piedi,alzarsi:Verbo:1
+سِيَاحَة:-:سياحة:-:turismo:Nome:1
+فَرِيق:فُرْقاء:فريق:فرقاء:squadra:Nome:1
+ثِقة:-:ثقة:-:fiducia,fede:Nome:1
+وَاثِق:-:واثق:-:fiducioso,sicuro:Aggettivo:1
+تَابَعَ:-:تابع:-:seguire,continuare:Verbo:1
+مُتابِع:-:متابع:-:seguace,fedele:Nome:1
+حِساب:-:حساب:-:conto,account:Nome:1
+بدا:يبدو:بدا:يبدو:sembrare,apparire:Verbo:1
+عقْد:-:عقد:-:decennio:Nome:1
+مَشهد:-:مشهد:-:vista,paesaggio,scena:Nome:1
+مِزَاج:-:مزاج:-:umore,temperamento:Nome:1
+عام:-:عام:-:comune,generale:Aggettivo:1
+رَحّب:-:رحّب:-:salutare,accogliere:Verbo:1
+قَرَّر:-:قرّر:-:decidere:Verbo:1
+فريد:-:فريد:-:unico:Aggettivo:1
+رَفَعَ:-:رفع:-:alzare,sollevare:Verbo:1

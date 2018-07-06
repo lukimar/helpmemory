@@ -54,19 +54,29 @@ def lez_search():
     with open('dictionary.txt','rb') as fichier:
         for newline in fichier.readlines() :
             listed=newline.decode().split(':')
-            if listed[6]==lezione_var.get() and i<=int(wordnumber_var.get()):
-                i+=1
+
+            if int(listed[6])==int(lezione_var.get()) and (i<=int(wordnumber_var.get()) or  state_wordnumber.get()==0):
+
+                if state_wordnumber.get()!=0:
+                    i+=1
                 valid_list.append(listed)
     definitions=str()
     message=Text(lezione,width=30,height=10)
+    string=''
     for i in range(len(valid_list)):
         #insert((i+1).0,valid_list[i][2])
         #insert((i+1).(30-len(valid_list[i][0])),valid_list[i][0])
-        tradu=valid_list[i][2]+'     =     '+valid_list[i][0]+'\n'
+        tradu=valid_list[i][4]+'     =     '+valid_list[i][0]+'\n'
+        string=str(i)+'.0'
+        print(message.index(index))
+        message.insert(string,valid_list[i][4])
+        string=str(i)+'.end'
+        message.insert(string,valid_list[i][0])
         definitions+=tradu
 
     start_lezione()
-    message.insert(2.10,definitions)
+    i=2+0.10
+    #message.insert(i,definitions)
     message['state']='disabled'
     message.grid(row=0,column=0,padx=10,pady=10)
     scroll=Scrollbar(lezione,orient='vertical',command=message.yview)
@@ -82,10 +92,11 @@ def newword():
     length=len(valid_list)-1
     rand=randint(0,length)
 
-    string= valid_list[rand][lang]
-
+    string=""
     syn_list=[]
     if lingua_var.get()=="Italiano":
+        for trads in valid_list[rand][4].split(","):
+            string+=trads+" "
         with open('synonyms.txt','rb') as fichier:
             for newline in fichier.readlines():
                 print(newline)
@@ -98,7 +109,7 @@ def newword():
                             syn_list.append(fullist[i+1])
 
     else:
-        string+=" "+valid_list[rand][lang+1]
+        string+=valid_list[rand][lang]+" "+valid_list[rand][lang+1]
     trad_var.set(string)
 
 def translate():
@@ -138,7 +149,7 @@ def translate():
                 entry_trad.delete(0,20)
                 info['fg']='red'
                 return
-    elif syn_list[0]:
+    elif syn_list:
         for synonyme in syn_list:
             if traduc.split()[0]==synonyme:
                 info_var.set('Un sinonimo?')
