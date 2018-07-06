@@ -78,23 +78,28 @@ def trans(event):
 
 def newword():
     global valid_list, rand,lang,trad,syn_list
-    entry_trad.delete(0,20)
+    entry_trad.delete(0,50)
     length=len(valid_list)-1
     rand=randint(0,length)
 
-    string= valid_list[rand][lang] + " : "
-    trad_var.set(string)
+    string= valid_list[rand][lang]
+
     syn_list=[]
     if lingua_var.get()=="Italiano":
         with open('synonyms.txt','rb') as fichier:
             for newline in fichier.readlines():
                 print(newline)
-                fullist=newline.split(':')
-                print(fullist[0].decode())
-                print(valid_list[rand][2])
-                if fullist[0].decode()==valid_list[rand][2]:
-                    for i in range(len(fullist)-1):
-                        syn_list.append(fullist[i+1])
+                fullist=newline.decode().split(':')
+                print(fullist[0])
+                print(valid_list[rand][4])
+                for trads in valid_list[rand][4].split(","):
+                    if fullist[0]==trads:
+                        for i in range(len(fullist)-1):
+                            syn_list.append(fullist[i+1])
+
+    else:
+        string+=" "+valid_list[rand][lang+1]
+    trad_var.set(string)
 
 def translate():
     global valid_list, rand,lang,trad,syn_list
@@ -103,15 +108,17 @@ def translate():
         info['fg']='black'
         info_var.set('Il campo è vuoto')
         return
-    if lingua_var.get()=="Arabo" and traduc==valid_list[rand][trad]:
+    if lingua_var.get()=="Arabo" and verify(traduc):
         info_var.set('Bravo!')
         info['fg']='green'
 
-    elif len(traduc.split())==1 and traduc==valid_list[rand][trad]:
+    elif len(traduc.split())==1 and verify(traduc):
+        print("1")
         if valid_list[rand][1]=="-":
             info_var.set('Bravo!')
             info['fg']='green'
         else :
+            print("2")
             if valid_list[rand][5]=="Nome":
                 info_var.set('E il plurale?')
             elif valid_list[rand][5]=="Verbo":
@@ -131,21 +138,33 @@ def translate():
                 entry_trad.delete(0,20)
                 info['fg']='red'
                 return
-    else:
+    elif syn_list[0]:
         for synonyme in syn_list:
-            if traduc.split()[0]==synonyme.decode():
+            if traduc.split()[0]==synonyme:
                 info_var.set('Un sinonimo?')
                 info['fg']='orange'
                 entry_trad.delete(0,20)
                 return
 
-    if traduc.split()[0]!=valid_list[rand][trad]:
+    elif traduc.split()[0]!=valid_list[rand][trad]:
         info_var.set('Riprova!')
         info['fg']='red'
         entry_trad.delete(0,20)
         return
 
     newword()
+
+def verify(string):
+    global rand, trad, valid_list
+    for traduc in valid_list[rand][trad].split(","):
+        print(string)
+        print(traduc)
+        if string==traduc:
+            return True
+    return False
+
+
+
 
 def start_quiz():
     global rand,lang,trad

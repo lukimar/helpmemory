@@ -57,25 +57,30 @@ def callback():
         for i in range(len(everysyn)):
             newline=everysyn[i]
             fullist=newline.decode().split(":")
-            if trad==fullist[0]:
-                writesyn=True
-                everysyn[i]=newline+space+less_encoded
+            for new_trad in trad.split(","):
+                if new_trad==fullist[0]:
+                    writesyn=True
+                    everysyn[i]=newline+space+less_encoded
     if writesyn:
         with open('synonyms.txt','bw') as synwrite:
             synwrite.writelines(everysyn)
-    else:
-        with open('dictionary.txt','rb') as fichier:
-            for newline in fichier.readlines():
-                fullist=newline.decode().split(":")
-                if trad==fullist[2]:
-                    newsyn=True
-    if newsyn:
-        with open('synonyms.txt','ab') as fichier:
-            print(len(everysyn))
-            if len(everysyn)!=0:
-                fichier.write('\n'.encode('utf-8'))
-            string=trad.encode('utf-8')+space+fullist[1].encode('utf-8')+space+less_encoded
-            fichier.write(string)
+
+    with open('dictionary.txt','rb') as fichier:
+        lines=fichier.readlines()
+    for newline in lines:
+        fullist=newline.decode().split(":")
+        for new_trad in trad.split(","):
+            for other_trad in fullist[4].split(","):
+                if new_trad==other_trad:
+                    with open('synonyms.txt','br') as synfile:
+                        everysyn=synfile.readlines()
+                    with open('synonyms.txt','ab') as fichier:
+                        print(len(everysyn))
+                        if len(everysyn)!=0:
+
+                            fichier.write('\n'.encode('utf-8'))
+                        string=new_trad.encode('utf-8')+space+fullist[2].encode('utf-8')+space+arabic_less.split(":")[0].encode('utf-8')
+                        fichier.write(string)
 
     with open('dictionary.txt','ab') as fichier:
         fichier.write(arab_encoded)
