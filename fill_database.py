@@ -92,6 +92,7 @@ def callback():
     entry_arab.delete(0,50)
     entry_french.delete(0,50)
 
+    read_last()
 
 
 def arab():
@@ -128,9 +129,23 @@ def last_line():
     with open('dictionary.txt','wb') as fichier:
         fichier.writelines(liste)
 
+    read_last()
+
 def call(event):
     callback()
     entry_arab.focus_set()
+
+def read_last():
+    with open('dictionary.txt','rb') as fichier:
+        liste=fichier.readlines()
+        longueur=len(liste)
+        if longueur:
+            string=""
+            string+=liste[longueur-3].decode()+liste[longueur-2].decode()+liste[longueur-1].decode()
+            previous1.delete("0.0","end")
+            previous1.insert('end',string)
+            #var_pre2.set(liste[longueur-2])
+            #var_pre3.set(liste[longueur-1])
 
 category=('Verbo', 'Nome', 'Aggettivo', 'Avverbio');
 master = Tk()
@@ -178,6 +193,18 @@ clear_but.grid(row=1,column=1,padx=10,pady=10)
 back=Button(pop_up,text='Cancel',command=hide)
 back.grid(row=1,column=0,padx=10,pady=10)
 hide()
+
+var_pre1=StringVar()
+#var_pre2=StringVar()
+#var_pre3=StringVar()
+previous1=Text(master,width=30,height=3,wrap='word')
+#previous2=Label(master,textvariable=var_pre2)
+#previous3=Label(master,textvariable=var_pre3)
+previous1.grid(row=6,column=0,columnspan=2,padx=10,pady=10)
+#previous2.grid(row=7,column=0,columnspan=2)
+#previous3.grid(row=8,column=0,columnspan=2)
+
+read_last()
 
 remove=Button(master,text='Remove',command=last_line)
 remove.grid(row=5,column=0,columnspan=2,padx=10,pady=10)

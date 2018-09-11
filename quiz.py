@@ -61,19 +61,32 @@ def lez_search():
                     i+=1
                 valid_list.append(listed)
     definitions=str()
-    message=Text(lezione,width=30,height=10)
+    message=Text(lezione,width=10,height=10,wrap='word')
     string=''
+    spaces=' '
+    longue=0
     for i in range(len(valid_list)):
+
+
+
         #insert((i+1).0,valid_list[i][2])
         #insert((i+1).(30-len(valid_list[i][0])),valid_list[i][0])
-        tradu=valid_list[i][4]+'     =     '+valid_list[i][0]+'\n'
-        string=str(i)+'.0'
-        print(message.index(index))
-        message.insert(string,valid_list[i][4])
-        string=str(i)+'.end'
-        message.insert(string,valid_list[i][0])
-        definitions+=tradu
+        spaces=' '*(50-len(valid_list[i][4])-len(valid_list[i][0]))
+        tradu=valid_list[i][4]+'    =    '+valid_list[i][0]
+        string=str(i+1)+'.0'
+        #message.insert(string,valid_list[i][4])
+        string=str(i+1)+'.end'
+        # message.insert('end',spaces)
+        tradu=tradu.replace(",",", ")
+        if len(tradu)>longue:
+            longue=len(tradu)
+            print(longue)
+        message['width']=longue
+        message.insert('end',tradu)
 
+        definitions+=tradu
+        #message.insert('end','\n')
+    print(message['width'])
     start_lezione()
     i=2+0.10
     #message.insert(i,definitions)
@@ -95,8 +108,8 @@ def newword():
     string=""
     syn_list=[]
     if lingua_var.get()=="Italiano":
-        for trads in valid_list[rand][4].split(","):
-            string+=trads+" "
+
+        string=valid_list[rand][4].replace(",",", ")
         with open('synonyms.txt','rb') as fichier:
             for newline in fichier.readlines():
                 print(newline)
@@ -182,7 +195,7 @@ def start_quiz():
     menu.grid_remove()
     para.grid_remove()
     lezione.grid_remove()
-    cadre.grid()
+    cadre.grid(padx=50,pady=50)
     entry_trad.bind("<Return>",trans)
     entry_trad.focus_set()
     if windows:
@@ -215,7 +228,7 @@ def start_parlezione():
 
 def start_lezione():
     lezione_par.grid_remove()
-    lezione.grid()
+    lezione.grid(padx=50,pady=50)
 
 def get_solution():
     global rand,valid_list,trad
@@ -241,11 +254,11 @@ def disable_wordnumber():
     else:
         which_wordnumber['state']='readonly';
 
-fen.rowconfigure(0,minsize=800)
-fen.columnconfigure(0,minsize=1000)
+#fen.rowconfigure(0,minsize=800)
+#fen.columnconfigure(0,minsize=1000)
 
 menu=LabelFrame(fen,text='Menu')
-menu.grid(row=0,column=0)
+menu.grid(row=0,column=0,padx=50,pady=50)
 
 lezione_but=Button(menu,text='Lezione',command=start_parlezione)
 lezione_but.grid(column=0,row=1,padx=50,pady=50)
