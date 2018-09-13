@@ -72,7 +72,7 @@ def lez_search():
         #insert((i+1).0,valid_list[i][2])
         #insert((i+1).(30-len(valid_list[i][0])),valid_list[i][0])
         spaces=' '*(50-len(valid_list[i][4])-len(valid_list[i][0]))
-        tradu=valid_list[i][4]+'    =    '+valid_list[i][0]
+        tradu=valid_list[i][4]+'    =    '+valid_list[i][0]+'\n'
         string=str(i+1)+'.0'
         #message.insert(string,valid_list[i][4])
         string=str(i+1)+'.end'
