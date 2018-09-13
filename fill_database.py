@@ -28,6 +28,7 @@ def callback():
     newsyn=False
     categoria=var.get()
     arabic=re.sub(' +',' ',entry_arab.get().strip())
+    first_less=deNoise(arabic)
     if len(arabic.split(":"))==1:
         arabic+=":-"
     else:
@@ -49,7 +50,7 @@ def callback():
     trad=re.sub(" +"," ",trad)
     trad=trad.replace(" ,",",")
     trad=trad.replace(", ",",")
-
+    all_trads=[]
     with open('synonyms.txt','ba') as synfile:
         print()
     with open('synonyms.txt','br') as synfile:
@@ -58,9 +59,10 @@ def callback():
             newline=everysyn[i]
             fullist=newline.decode().split(":")
             for new_trad in trad.split(","):
+                all_trads.append(new_trad)
                 if new_trad==fullist[0]:
                     writesyn=True
-                    everysyn[i]=newline+space+less_encoded
+                    everysyn[i]=newline+space+first_less.encode('utf-8')
     if writesyn:
         with open('synonyms.txt','bw') as synwrite:
             synwrite.writelines(everysyn)
@@ -70,8 +72,12 @@ def callback():
     for newline in lines:
         fullist=newline.decode().split(":")
         for new_trad in trad.split(","):
+            not_new=False
             for other_trad in fullist[4].split(","):
-                if new_trad==other_trad:
+                for one_trad in all_trads:
+                    if new_trad==one_trad:
+                        not_new=True
+                if new_trad==other_trad and not not_new:
                     with open('synonyms.txt','br') as synfile:
                         everysyn=synfile.readlines()
                     with open('synonyms.txt','ab') as fichier:
@@ -125,9 +131,30 @@ def last_line():
         liste=fichier.readlines()
         longueur=len(liste)
         if longueur:
+            deleted=liste[longueur-1].decode()
             del liste[longueur-1]
     with open('dictionary.txt','wb') as fichier:
         fichier.writelines(liste)
+
+    with open('synonyms.txt','rb') as fichier:
+        del_list=deleted.split(":")
+        syn1=fichier.readlines()
+        syn=syn1
+        i=0
+        for lines in syn:
+            line=lines.decode().split(":")
+            it_trad=deleted.split(":")[4].split(",")
+            for trad in it_trad:
+                if trad==line[0]:
+                    if len(line)<4:
+                        del syn1[i]
+                    else:
+                        del line[len(line)-1]
+                        result=":".join(line)
+                        syn1[i]=result.encode("utf-8")
+            i+=1
+    with open('synonyms.txt','wb') as fichier:
+        fichier.writelines(syn1)
 
     read_last()
 
@@ -142,8 +169,10 @@ def read_last():
         if longueur:
             string=""
             string+=liste[longueur-3].decode()+liste[longueur-2].decode()+liste[longueur-1].decode()
+            previous1['state']="normal"
             previous1.delete("0.0","end")
             previous1.insert('end',string)
+            previous1['state']="disabled"
             #var_pre2.set(liste[longueur-2])
             #var_pre3.set(liste[longueur-1])
 
