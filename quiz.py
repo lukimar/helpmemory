@@ -66,13 +66,16 @@ def lez_search():
     spaces=' '
     longue=0
     for i in range(len(valid_list)):
+        if valid_list[i][1]!="-":
+            if valid_list[i][5]!='Verbo':
+                arabic_string=valid_list[i][0]+'   ج   '+valid_list[i][1]
+            else :
+                arabic_string=valid_list[i][0]+'   '+valid_list[i][1]
+        else:
+            arabic_string=valid_list[i][0]
 
-
-
-        #insert((i+1).0,valid_list[i][2])
-        #insert((i+1).(30-len(valid_list[i][0])),valid_list[i][0])
         spaces=' '*(50-len(valid_list[i][4])-len(valid_list[i][0]))
-        tradu=valid_list[i][4]+'    =    '+valid_list[i][0]+'\n'
+        tradu=valid_list[i][4]+'    =    '+arabic_string+'\n'
         string=str(i+1)+'.0'
         #message.insert(string,valid_list[i][4])
         string=str(i+1)+'.end'
