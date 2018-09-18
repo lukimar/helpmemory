@@ -9,8 +9,7 @@ from random import randint
 if windows:
         import py_win_keyboard_layout
 
-with open('dictionary.txt','rb') as fichier:
-    print(fichier.read())
+
 
 
 fen=Tk()
@@ -20,6 +19,9 @@ syn_list=[]
 rand=0
 lang=0
 trad=0
+filename=''
+synfile=''
+
 def disable_inserzione():
     if state_inserzione.get()==0:
         which_inserzione['state']='disabled';
@@ -27,11 +29,11 @@ def disable_inserzione():
         which_inserzione['state']='readonly';
 
 def search():
-
+    global filename,synfile
     global valid_list,rand,lang,trad
     valid_list=[]
 
-    with open('dictionary.txt','rb') as fichier:
+    with open(filename,'rb') as fichier:
 
         for newline in fichier.readlines():
             newlist=newline.decode().split(":")
@@ -47,11 +49,11 @@ def search():
 
 
 def lez_search():
-    global valid_list
+    global valid_list,filename,synfile
     labels=[]
     valid_list=[]
     i=0
-    with open('dictionary.txt','rb') as fichier:
+    with open(filename,'rb') as fichier:
         for newline in fichier.readlines() :
             listed=newline.decode().split(':')
 
@@ -103,7 +105,7 @@ def trans(event):
     translate()
 
 def newword():
-    global valid_list, rand,lang,trad,syn_list
+    global valid_list, rand,lang,trad,syn_list,synfile
     entry_trad.delete(0,50)
     length=len(valid_list)-1
     rand=randint(0,length)
@@ -113,7 +115,7 @@ def newword():
     if lingua_var.get()=="Italiano":
 
         string=valid_list[rand][4].replace(",",", ")
-        with open('synonyms.txt','rb') as fichier:
+        with open(synfile,'rb') as fichier:
             for newline in fichier.readlines():
                 print(newline)
                 fullist=newline.decode().split(':')
@@ -260,8 +262,35 @@ def disable_wordnumber():
 #fen.rowconfigure(0,minsize=800)
 #fen.columnconfigure(0,minsize=1000)
 
+def try_filename():
+    global filename,synfile
+    filename=dic_var.get()+'.dic'
+    synfile=dic_var.get()+'.syn'
+    try:
+        file=open(filename,"r")
+        dic_menu.grid_remove()
+        menu.grid(row=0,column=0,padx=50,pady=50)
+        file.close()
+    except:
+        dic_var.set('')
+        dic_var2.set('Questo proggetto non è stato trovato')
+
+
+
+
+dic_menu=Frame(fen)
+dic_menu.grid(row=0,column=0,padx=50,pady=50)
+dic_var2=StringVar()
+dic_var2.set("Quale proggetto vuoi usare?")
+dic_label=Label(dic_menu,textvariable=dic_var2)
+dic_label.grid(column=0,row=0,padx=50,pady=50)
+dic_var=StringVar()
+dic_entry=Entry(dic_menu,textvariable=dic_var)
+dic_entry.grid(column=0,row=1,padx=50,pady=50)
+dic_button=Button(dic_menu,text='Okay',command=try_filename)
+dic_button.grid(column=0,row=2,padx=50,pady=50)
+
 menu=LabelFrame(fen,text='Menu')
-menu.grid(row=0,column=0,padx=50,pady=50)
 
 lezione_but=Button(menu,text='Lezione',command=start_parlezione)
 lezione_but.grid(column=0,row=1,padx=50,pady=50)

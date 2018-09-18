@@ -24,6 +24,7 @@ def deNoise(text):
 
 
 def callback():
+    global filename,synfile
     writesyn=False
     newsyn=False
     categoria=var.get()
@@ -51,9 +52,9 @@ def callback():
     trad=trad.replace(" ,",",")
     trad=trad.replace(", ",",")
     all_trads=[]
-    with open('synonyms.txt','ba') as synfile:
+    with open(synfile,'ba') as synfile:
         print()
-    with open('synonyms.txt','br') as synfile:
+    with open(synfile,'br') as synfile:
         everysyn=synfile.readlines()
         for i in range(len(everysyn)):
             newline=everysyn[i]
@@ -64,10 +65,10 @@ def callback():
                     writesyn=True
                     everysyn[i]=newline+space+first_less.encode('utf-8')
     if writesyn:
-        with open('synonyms.txt','bw') as synwrite:
+        with open(synfile,'bw') as synwrite:
             synwrite.writelines(everysyn)
 
-    with open('dictionary.txt','rb') as fichier:
+    with open(filename,'rb') as fichier:
         lines=fichier.readlines()
     for newline in lines:
         fullist=newline.decode().split(":")
@@ -78,9 +79,9 @@ def callback():
                     if new_trad==one_trad:
                         not_new=True
                 if new_trad==other_trad and not not_new:
-                    with open('synonyms.txt','br') as synfile:
+                    with open(synfile,'br') as synfile:
                         everysyn=synfile.readlines()
-                    with open('synonyms.txt','ab') as fichier:
+                    with open(synfile,'ab') as fichier:
                         print(len(everysyn))
                         if len(everysyn)!=0:
 
@@ -88,11 +89,11 @@ def callback():
                         string=new_trad.encode('utf-8')+space+fullist[2].encode('utf-8')+space+arabic_less.split(":")[0].encode('utf-8')
                         fichier.write(string)
 
-    with open('dictionary.txt','ab') as fichier:
+    with open(filename,'ab') as fichier:
         fichier.write(arab_encoded)
         fichier.write(space)
         fichier.write(less_encoded)
-    with open('dictionary.txt','a') as fichier:
+    with open(filename,'a') as fichier:
         endstr=':'+trad+':'+categoria+':'+inserzione+'\n'
         fichier.write(endstr)
     entry_arab.delete(0,50)
@@ -110,33 +111,34 @@ def french():
 
 def exiting():
     py_win_keyboard_layout.change_foreground_window_keyboard_layout(layout)
-    master.destroy()
+    fen.destroy()
 
 def clear():
-    file=open('dictionary.txt','w')
+    file=open(filename,'w')
     file.close()
-    file=open('synonyms.txt','w')
+    file=open(synfile,'w')
     file.close()
     hide()
 
-def show():
-    pop_up.deiconify()
+def show(pop):
+    pop.deiconify()
 
-def hide():
-    pop_up.withdraw()
-
+def hide(pop):
+    pop.withdraw()
+    dic_var.set('')
 
 def last_line():
-    with open('dictionary.txt','rb') as fichier:
+    global filename,synfile
+    with open(filename,'rb') as fichier:
         liste=fichier.readlines()
         longueur=len(liste)
         if longueur:
             deleted=liste[longueur-1].decode()
             del liste[longueur-1]
-    with open('dictionary.txt','wb') as fichier:
+    with open(filename,'wb') as fichier:
         fichier.writelines(liste)
 
-    with open('synonyms.txt','rb') as fichier:
+    with open(synfile,'rb') as fichier:
         del_list=deleted.split(":")
         syn1=fichier.readlines()
         syn=syn1
@@ -153,7 +155,7 @@ def last_line():
                         result=":".join(line)
                         syn1[i]=result.encode("utf-8")
             i+=1
-    with open('synonyms.txt','wb') as fichier:
+    with open(synfile,'wb') as fichier:
         fichier.writelines(syn1)
 
     read_last()
@@ -163,7 +165,8 @@ def call(event):
     entry_arab.focus_set()
 
 def read_last():
-    with open('dictionary.txt','rb') as fichier:
+    global filename,synfile
+    with open(filename,'rb') as fichier:
         liste=fichier.readlines()
         longueur=len(liste)
         if longueur:
@@ -176,10 +179,62 @@ def read_last():
             #var_pre2.set(liste[longueur-2])
             #var_pre3.set(liste[longueur-1])
 
+
+def try_filename():
+    global filename,synfile
+    filename=dic_var.get()+".dic"
+    synfile=dic_var.get()+".syn"
+    try:
+        file=open(filename,"r")
+        file.close()
+        file2=open(synfile,"r")
+        file2.close()
+        dic_menu.grid_remove()
+        master.grid(row=0,column=0,padx=50,pady=50)
+
+        read_last()
+        hide(dic_pop_up)
+    except:
+        show(dic_pop_up)
+
+def create_file():
+    file1=open(filename,"w")
+    file1.close()
+    file2=open(synfile,"w")
+    file2.close()
+    try_filename()
+
+filename=''
+synfile=''
 category=('Verbo', 'Nome', 'Aggettivo', 'Avverbio');
-master = Tk()
-master.option_add("*Font","Calibri 22")
+fen = Tk()
+fen.option_add("*Font","Calibri 22")
 var = StringVar()
+master=Frame(fen)
+
+
+dic_menu=Frame(fen)
+dic_menu.grid(row=0,column=0,padx=50,pady=50)
+dic_var2=StringVar()
+dic_var2.set("Quale proggetto vuoi usare?")
+dic_label=Label(dic_menu,textvariable=dic_var2)
+dic_label.grid(column=0,row=0,padx=50,pady=50)
+dic_var=StringVar()
+dic_entry=Entry(dic_menu,textvariable=dic_var)
+dic_entry.grid(column=0,row=1,padx=50,pady=50)
+dic_button=Button(dic_menu,text='Okay',command=try_filename)
+dic_button.grid(column=0,row=2,padx=50,pady=50)
+
+dic_pop_up=Toplevel()
+
+dic_warning=Label(dic_pop_up,text='Questo proggetto non esiste ancora')
+dic_warning.grid(row=0,column=0,columnspan=2,padx=10,pady=10)
+dic_create=Button(dic_pop_up,text='Creare',command=create_file)
+dic_create.grid(row=1,column=1,padx=10,pady=10)
+
+dic_back=Button(dic_pop_up,text='Annullare',command=lambda: hide(dic_pop_up))
+dic_back.grid(row=1,column=0,padx=10,pady=10)
+hide(dic_pop_up)
 
 entry_arab = Entry(master,validate='focusin')
 entry_arab.grid(row=2,column=0,padx=10,pady=10)
@@ -209,7 +264,7 @@ insert.grid(row=3,column=1,padx=10,pady=10)
 okay = Button(master, text="Okay", width=10, command=callback)
 okay.grid(row=5,column=1,padx=10,pady=10)
 
-empty=Button(master,text='Empty',command=show)
+empty=Button(master,text='Empty',command=lambda: show(pop_up))
 empty.grid(row=5,column=0,padx=10,pady=10)
 
 pop_up=Toplevel()
@@ -219,9 +274,9 @@ warning.grid(row=0,column=0,columnspan=2,padx=10,pady=10)
 clear_but=Button(pop_up,text='Okay',command=clear,bg='red')
 clear_but.grid(row=1,column=1,padx=10,pady=10)
 
-back=Button(pop_up,text='Cancel',command=hide)
+back=Button(pop_up,text='Cancel',command=lambda: hide(pop_up))
 back.grid(row=1,column=0,padx=10,pady=10)
-hide()
+hide(pop_up)
 
 var_pre1=StringVar()
 #var_pre2=StringVar()
@@ -233,19 +288,19 @@ previous1.grid(row=6,column=0,columnspan=2,padx=10,pady=10)
 #previous2.grid(row=7,column=0,columnspan=2)
 #previous3.grid(row=8,column=0,columnspan=2)
 
-read_last()
+
 
 remove=Button(master,text='Remove',command=last_line)
 remove.grid(row=5,column=0,columnspan=2,padx=10,pady=10)
 
-master.bind("<Return>",call)
+fen.bind("<Return>",call)
 entry_arab.focus_set()
 if windows:
     print('ok')
     layout=py_win_keyboard_layout.get_foreground_window_keyboard_layout()
-    master.protocol("WM_DELETE_WINDOW",exiting)
+    fen.protocol("WM_DELETE_WINDOW",exiting)
     entry_arab['validatecommand']=arab
     entry_french['validatecommand']=french
 
-master.mainloop()
+fen.mainloop()
 
