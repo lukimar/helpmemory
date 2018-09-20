@@ -182,11 +182,12 @@ def read_last():
                     max_len=len(liste[i].decode())
             if max_len>55:
                 max_len=55
-            print(max_len)
+
             previous1['state']="normal"
             previous1['width']=max_len
             previous1.delete("0.0","end")
             previous1.insert('end',string)
+            previous1.yview_scroll(longueur,'units')
             previous1['state']="disabled"
 
 
