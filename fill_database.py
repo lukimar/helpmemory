@@ -52,10 +52,10 @@ def callback():
     trad=trad.replace(" ,",",")
     trad=trad.replace(", ",",")
     all_trads=[]
-    with open(synfile,'ba') as synfile:
+    with open(synfile,'ba') as syn_file:
         print()
-    with open(synfile,'br') as synfile:
-        everysyn=synfile.readlines()
+    with open(synfile,'br') as syn_file:
+        everysyn=syn_file.readlines()
         for i in range(len(everysyn)):
             newline=everysyn[i]
             fullist=newline.decode().split(":")
@@ -164,6 +164,9 @@ def call(event):
     callback()
     entry_arab.focus_set()
 
+def call2(event):
+    dic_button.invoke()
+
 def read_last():
     global filename,synfile
     with open(filename,'rb') as fichier:
@@ -171,13 +174,21 @@ def read_last():
         longueur=len(liste)
         if longueur:
             string=""
-            string+=liste[longueur-3].decode()+liste[longueur-2].decode()+liste[longueur-1].decode()
+            i=0
+            max_len=0
+            for i in range(longueur):
+                string+=liste[i].decode()
+                if max_len<len(liste[i].decode()):
+                    max_len=len(liste[i].decode())
+            if max_len>55:
+                max_len=55
+            print(max_len)
             previous1['state']="normal"
+            previous1['width']=max_len
             previous1.delete("0.0","end")
             previous1.insert('end',string)
             previous1['state']="disabled"
-            #var_pre2.set(liste[longueur-2])
-            #var_pre3.set(liste[longueur-1])
+
 
 
 def try_filename():
@@ -194,6 +205,8 @@ def try_filename():
 
         read_last()
         hide(dic_pop_up)
+        fen.unbind("<Return>")
+        fen.bind("<Return>",call)
     except:
         show(dic_pop_up)
 
@@ -222,9 +235,11 @@ dic_label.grid(column=0,row=0,padx=50,pady=50)
 dic_var=StringVar()
 dic_entry=Entry(dic_menu,textvariable=dic_var)
 dic_entry.grid(column=0,row=1,padx=50,pady=50)
+
 dic_button=Button(dic_menu,text='Okay',command=try_filename)
 dic_button.grid(column=0,row=2,padx=50,pady=50)
-
+fen.bind("<Return>",call2)
+dic_entry.focus_set()
 dic_pop_up=Toplevel()
 
 dic_warning=Label(dic_pop_up,text='Questo proggetto non esiste ancora')
@@ -281,19 +296,22 @@ hide(pop_up)
 var_pre1=StringVar()
 #var_pre2=StringVar()
 #var_pre3=StringVar()
-previous1=Text(master,width=30,height=3,wrap='word')
+previous1=Text(master,width=40,height=5,wrap='word')
 #previous2=Label(master,textvariable=var_pre2)
 #previous3=Label(master,textvariable=var_pre3)
 previous1.grid(row=6,column=0,columnspan=2,padx=10,pady=10)
 #previous2.grid(row=7,column=0,columnspan=2)
 #previous3.grid(row=8,column=0,columnspan=2)
+scroll=Scrollbar(master,orient='vertical',command=previous1.yview)
+scroll.grid(row=6,column=2,sticky='ns')
+previous1['yscrollcommand']=scroll.set
 
 
 
 remove=Button(master,text='Remove',command=last_line)
 remove.grid(row=5,column=0,columnspan=2,padx=10,pady=10)
 
-fen.bind("<Return>",call)
+
 entry_arab.focus_set()
 if windows:
     print('ok')

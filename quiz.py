@@ -21,6 +21,7 @@ lang=0
 trad=0
 filename=''
 synfile=''
+information='Bravo!'
 
 def disable_inserzione():
     if state_inserzione.get()==0:
@@ -38,7 +39,7 @@ def search():
         for newline in fichier.readlines():
             newlist=newline.decode().split(":")
             if categoria_var.get()=='Tutto' or categoria_var.get()==newlist[5]:
-                if state_inserzione.get()==0 or inserzione_var.get()==newlist[6]:
+                if state_inserzione.get()==0 or int(inserzione_var.get())==int(newlist[6]):
                     valid_list.append(newlist)
 
 
@@ -131,8 +132,9 @@ def newword():
     trad_var.set(string)
 
 def translate():
-    global valid_list, rand,lang,trad,syn_list
+    global valid_list, rand,lang,trad,syn_list,information
     traduc=entry_var.get()
+
     if traduc=="":
         info['fg']='black'
         info_var.set('Il campo è vuoto')
@@ -144,7 +146,7 @@ def translate():
     elif len(traduc.split())==1 and verify(traduc):
         print("1")
         if valid_list[rand][1]=="-":
-            info_var.set('Bravo!')
+            info_var.set(information)
             info['fg']='green'
         else :
             print("2")
@@ -157,7 +159,7 @@ def translate():
     elif len(traduc.split())==2:
         if traduc.split()[0]==valid_list[rand][trad]:
             if traduc.split()[1]==valid_list[rand][3]:
-                info_var.set('Bravo!')
+                info_var.set(information)
                 info['fg']='green'
             else :
                 if valid_list[rand][5]=="Nome":
@@ -180,7 +182,7 @@ def translate():
         info['fg']='red'
         entry_trad.delete(0,20)
         return
-
+    information='Bravo!'
     newword()
 
 def verify(string):
@@ -236,7 +238,8 @@ def start_lezione():
     lezione.grid(padx=50,pady=50)
 
 def get_solution():
-    global rand,valid_list,trad
+    global rand,valid_list,trad,information
+    information=''
     string=valid_list[rand][trad]
     if valid_list[rand][3]!="-" and lingua_var.get()=="Italiano":
         string+=" "+valid_list[rand][3]
@@ -262,15 +265,23 @@ def disable_wordnumber():
 #fen.rowconfigure(0,minsize=800)
 #fen.columnconfigure(0,minsize=1000)
 
+def call2(event):
+    dic_button.invoke()
+
 def try_filename():
     global filename,synfile
     filename=dic_var.get()+'.dic'
     synfile=dic_var.get()+'.syn'
     try:
         file=open(filename,"r")
+        file.close()
+        file2=open(synfile,"r")
+        file2.close()
         dic_menu.grid_remove()
         menu.grid(row=0,column=0,padx=50,pady=50)
-        file.close()
+        fen.unbind("<Return>")
+
+
     except:
         dic_var.set('')
         dic_var2.set('Questo proggetto non è stato trovato')
@@ -289,6 +300,9 @@ dic_entry=Entry(dic_menu,textvariable=dic_var)
 dic_entry.grid(column=0,row=1,padx=50,pady=50)
 dic_button=Button(dic_menu,text='Okay',command=try_filename)
 dic_button.grid(column=0,row=2,padx=50,pady=50)
+
+fen.bind("<Return>",call2)
+dic_entry.focus_set()
 
 menu=LabelFrame(fen,text='Menu')
 
